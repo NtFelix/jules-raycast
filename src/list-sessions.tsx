@@ -1,4 +1,4 @@
-import { ActionPanel, List, Action, getPreferenceValues, showToast, Toast, useNavigation, Form } from "@raycast/api";
+import { ActionPanel, List, Action, getPreferenceValues, showToast, Toast, useNavigation, Form, Icon } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState, useEffect } from "react";
 
@@ -167,9 +167,9 @@ function SessionActivities({ session }: { session: Session }) {
           <Action.Push
             title="Send Message"
             target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />}
-            icon="envelope.png"
+            icon={Icon.Envelope}
           />
-          <Action title="Refresh" onAction={revalidate} icon="arrow-clockwise.png" />
+          <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
         </ActionPanel>
       }
     >
@@ -209,9 +209,9 @@ function SessionActivities({ session }: { session: Session }) {
                   target={
                     <SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />
                   }
-                  icon="envelope.png"
+                  icon={Icon.Envelope}
                 />
-                <Action title="Refresh" onAction={revalidate} icon="arrow-clockwise.png" />
+                <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
               </ActionPanel>
             }
           />
