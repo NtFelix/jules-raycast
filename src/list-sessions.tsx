@@ -1,6 +1,7 @@
-import { ActionPanel, List, Action, getPreferenceValues, showToast, Toast } from "@raycast/api";
+import { ActionPanel, List, Action, getPreferenceValues, showToast, Toast, useNavigation, Form } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState, useEffect } from "react";
+
 
 interface Preferences {
     julesApiKey: string;
@@ -36,6 +37,200 @@ type SessionsResponse = {
     sessions: Session[];
     nextPageToken?: string;
 };
+
+type Activity = {
+    name: string;
+    id: string;
+    description: string;
+    createTime: string;
+    originator: string;
+    agentMessaged?: { agentMessage: string };
+    userMessaged?: { userMessage: string };
+    planGenerated?: { plan: { steps: { title: string }[] } };
+    progressUpdated?: { title: string; description: string };
+    sessionCompleted?: Record<string, never>;
+    sessionFailed?: { reason: string };
+};
+
+type ActivitiesResponse = {
+    activities: Activity[];
+    nextPageToken?: string;
+};
+
+function SendMessageForm({
+    session,
+    onMessageSent,
+    lastActivity,
+}: {
+    session: Session;
+    onMessageSent: () => void;
+    lastActivity?: Activity;
+}) {
+    const preferences = getPreferenceValues<Preferences>();
+    const { pop } = useNavigation();
+    const [isLoading, setIsLoading] = useState(false);
+
+    async function handleSubmit(values: { message: string }) {
+        setIsLoading(true);
+        const toast = await showToast({ style: Toast.Style.Animated, title: "Sending message..." });
+
+        try {
+            const response = await fetch(`https://jules.googleapis.com/v1alpha/sessions/${session.id}:sendMessage`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Goog-Api-Key": preferences.julesApiKey,
+                },
+                body: JSON.stringify({
+                    prompt: values.message,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to send message: ${response.statusText} - ${errorText}`);
+            }
+
+            toast.style = Toast.Style.Success;
+            toast.title = "Message sent";
+            onMessageSent();
+            pop();
+        } catch (error) {
+            toast.style = Toast.Style.Failure;
+            toast.title = "Failed to send message";
+            toast.message = error instanceof Error ? error.message : String(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    let lastActivityText = "";
+    if (lastActivity) {
+        if (lastActivity.userMessaged) {
+            lastActivityText = `You: ${lastActivity.userMessaged.userMessage}`;
+        } else if (lastActivity.agentMessaged) {
+            lastActivityText = `Jules: ${lastActivity.agentMessaged.agentMessage}`;
+        } else if (lastActivity.planGenerated) {
+            lastActivityText = "Plan Generated";
+        } else if (lastActivity.progressUpdated) {
+            lastActivityText = `Progress Update: ${lastActivity.progressUpdated.title}`;
+        } else if (lastActivity.sessionCompleted) {
+            lastActivityText = "Session Completed";
+        } else if (lastActivity.sessionFailed) {
+            lastActivityText = `Session Failed: ${lastActivity.sessionFailed.reason}`;
+        }
+    }
+
+    return (
+        <Form
+            isLoading={isLoading}
+            actions={
+                <ActionPanel>
+                    <Action.SubmitForm onSubmit={handleSubmit} />
+                </ActionPanel>
+            }
+        >
+            {lastActivityText && <Form.Description title="Last Activity" text={lastActivityText} />}
+            <Form.TextArea id="message" title="Message" placeholder="Type your message..." />
+        </Form>
+    );
+}
+
+function SessionActivities({ session }: { session: Session }) {
+    const preferences = getPreferenceValues<Preferences>();
+    const { data, isLoading, revalidate } = useFetch<ActivitiesResponse>(
+        `https://jules.googleapis.com/v1alpha/sessions/${session.id}/activities`,
+        {
+            headers: {
+                "X-Goog-Api-Key": preferences.julesApiKey,
+            },
+            onError: (error) => {
+                showToast({
+                    style: Toast.Style.Failure,
+                    title: "Failed to fetch activities",
+                    message: error.message,
+                });
+            },
+        }
+    );
+
+    const sortedActivities = [...(data?.activities || [])].sort(
+        (a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
+    );
+
+    return (
+        <List
+            isLoading={isLoading}
+            navigationTitle={`Chat: ${session.title || session.id}`}
+            isShowingDetail
+            actions={
+                <ActionPanel>
+                    <Action.Push
+                        title="Send Message"
+                        target={
+                            <SendMessageForm
+                                session={session}
+                                onMessageSent={revalidate}
+                                lastActivity={sortedActivities[0]}
+                            />
+                        }
+                        icon="envelope.png"
+                    />
+                    <Action title="Refresh" onAction={revalidate} icon="arrow-clockwise.png" />
+                </ActionPanel>
+            }
+        >
+            {sortedActivities.map((activity) => {
+                let markdown = "";
+                let title = "Unknown Activity";
+
+                if (activity.userMessaged) {
+                    title = "You";
+                    markdown = `**You:**\n\n${activity.userMessaged.userMessage}`;
+                } else if (activity.agentMessaged) {
+                    title = "Jules";
+                    markdown = `**Jules:**\n\n${activity.agentMessaged.agentMessage}`;
+                } else if (activity.planGenerated) {
+                    title = "Plan Generated";
+                    markdown = `**Plan Generated:**\n\n${activity.planGenerated.plan.steps.map((s, i) => `${i + 1}. ${s.title}`).join("\n")}`;
+                } else if (activity.progressUpdated) {
+                    title = "Progress Update";
+                    markdown = `**Progress Update:**\n\n**${activity.progressUpdated.title}**\n${activity.progressUpdated.description}`;
+                } else if (activity.sessionCompleted) {
+                    title = "Session Completed";
+                    markdown = "**Session Completed**";
+                } else if (activity.sessionFailed) {
+                    title = "Session Failed";
+                    markdown = `**Session Failed:**\n\n${activity.sessionFailed.reason}`;
+                }
+
+                return (
+                    <List.Item
+                        key={activity.id}
+                        title={title}
+                        detail={<List.Item.Detail markdown={markdown} />}
+                        actions={
+                            <ActionPanel>
+                                <Action.Push
+                                    title="Send Message"
+                                    target={
+                                        <SendMessageForm
+                                            session={session}
+                                            onMessageSent={revalidate}
+                                            lastActivity={sortedActivities[0]}
+                                        />
+                                    }
+                                    icon="envelope.png"
+                                />
+                                <Action title="Refresh" onAction={revalidate} icon="arrow-clockwise.png" />
+                            </ActionPanel>
+                        }
+                    />
+                );
+            })}
+        </List>
+    );
+}
 
 export default function Command() {
     const preferences = getPreferenceValues<Preferences>();
@@ -112,6 +307,10 @@ export default function Command() {
                     ]}
                     actions={
                         <ActionPanel>
+                            <Action.Push
+                                title="View Activities"
+                                target={<SessionActivities session={session} />}
+                            />
                             {session.url && <Action.OpenInBrowser url={session.url} />}
                             <Action.CopyToClipboard content={session.id} title="Copy Session ID" />
                         </ActionPanel>
