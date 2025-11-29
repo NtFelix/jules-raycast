@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
 
 permissions:
   contents: write
@@ -23,12 +22,9 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dry_run: ${{ github.event_name == 'pull_request' }}
-          custom_tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.title || '' }}
 
       - name: Create a GitHub release
         uses: softprops/action-gh-release@v2
-        if: github.event_name != 'pull_request'
         with:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
