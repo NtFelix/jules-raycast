@@ -23,6 +23,16 @@
       "mode": "view"
     }
   ],
+  "preferences": [
+    {
+      "name": "julesApiKey",
+      "type": "password",
+      "required": true,
+      "title": "Jules API Key",
+      "description": "API Key for Jules",
+      "placeholder": "Enter your Jules API Key"
+    }
+  ],
   "dependencies": {
     "@raycast/api": "^1.103.9",
     "@raycast/utils": "^1.17.0"

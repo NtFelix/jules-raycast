@@ -1,4 +1,4 @@
-import { Form, ActionPanel, Action, showToast } from "@raycast/api";
+import { Form, ActionPanel, Action, showToast, getPreferenceValues } from "@raycast/api";
 
 type Values = {
   textfield: string;
@@ -9,7 +9,14 @@ type Values = {
   tokeneditor: string[];
 };
 
+interface Preferences {
+  julesApiKey: string;
+}
+
 export default function Command() {
+  const preferences = getPreferenceValues<Preferences>();
+  console.log("API Key loaded:", preferences.julesApiKey ? "Yes" : "No");
+
   function handleSubmit(values: Values) {
     console.log(values);
     showToast({ title: "Submitted form", message: "See logs for submitted values" });
