@@ -1,4 +1,14 @@
-import { ActionPanel, List, Action, getPreferenceValues, showToast, Toast, useNavigation, Form, Icon } from "@raycast/api";
+import {
+  ActionPanel,
+  List,
+  Action,
+  getPreferenceValues,
+  showToast,
+  Toast,
+  useNavigation,
+  Form,
+  Icon,
+} from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState, useEffect } from "react";
 
