@@ -21,6 +21,13 @@
       "subtitle": "start a new sessino with google jules",
       "description": "it starts a new google jules session",
       "mode": "view"
+    },
+    {
+      "name": "list-sessions",
+      "title": "List Sessions",
+      "subtitle": "list your jules sessions",
+      "description": "list your jules sessions",
+      "mode": "view"
     }
   ],
   "preferences": [
