@@ -52,7 +52,7 @@ export default function Command() {
           message: error.message,
         });
       },
-    }
+    },
   );
 
   const { data: sourceDetails, isLoading: isLoadingSourceDetails } = useFetch<Source>(
@@ -69,7 +69,7 @@ export default function Command() {
           message: error.message,
         });
       },
-    }
+    },
   );
 
   // Set initial selected source when sources are loaded
@@ -133,12 +133,7 @@ export default function Command() {
         </ActionPanel>
       }
     >
-      <Form.Dropdown
-        id="source"
-        title="Source"
-        value={selectedSource}
-        onChange={setSelectedSource}
-      >
+      <Form.Dropdown id="source" title="Source" value={selectedSource} onChange={setSelectedSource}>
         {sourcesData?.sources?.map((source) => (
           <Form.Dropdown.Item
             key={source.name}
@@ -150,11 +145,7 @@ export default function Command() {
 
       <Form.Dropdown id="branch" title="Branch" defaultValue={defaultBranch}>
         {branches.map((branch) => (
-          <Form.Dropdown.Item
-            key={branch.displayName}
-            value={branch.displayName}
-            title={branch.displayName}
-          />
+          <Form.Dropdown.Item key={branch.displayName} value={branch.displayName} title={branch.displayName} />
         ))}
       </Form.Dropdown>
 
