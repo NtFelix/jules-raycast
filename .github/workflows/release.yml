@@ -1,0 +1,50 @@
+name: Create Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Bump Level
+        id: bump
+        run: |
+          BUMP="patch"
+          labels="${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+          if [[ $labels == *"major"* ]]; then
+            BUMP="major"
+          elif [[ $labels == *"minor"* ]]; then
+            BUMP="minor"
+          fi
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          echo "Detected bump level: $BUMP"
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: ${{ steps.bump.outputs.bump }}
+
+      - name: Create a GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
