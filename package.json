@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "jules",
-  "title": "jules",
-  "description": "it bring google jules coding agent to your fingertips with raycast",
+  "title": "Jules",
+  "description": "It brings Google Jules coding agent to your fingertips with Raycast",
   "icon": "extension-icon.png",
   "author": "ntfelix",
   "owner": "felix-plant",
