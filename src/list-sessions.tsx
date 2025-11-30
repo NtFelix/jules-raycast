@@ -67,7 +67,7 @@ function SendMessageForm({
     const toast = await showToast({ style: Toast.Style.Animated, title: "Sending message..." });
 
     try {
-      const response = await fetch(`${API_BASE_URL} /sessions/${session.id}: sendMessage`, {
+      const response = await fetch(`${API_BASE_URL}/sessions/${session.id}:sendMessage`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,7 +131,7 @@ function SendMessageForm({
 function SessionActivities({ session }: { session: Session }) {
   const preferences = getPreferenceValues<Preferences>();
   const { data, isLoading, revalidate } = useFetch<ActivitiesResponse>(
-    `${API_BASE_URL} /sessions/${session.id}/activities`,
+    `${API_BASE_URL}/sessions/${session.id}/activities`,
     {
       headers: {
         "X-Goog-Api-Key": preferences.julesApiKey,
