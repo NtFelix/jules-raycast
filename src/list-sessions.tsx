@@ -211,7 +211,9 @@ function SessionActivities({ session }: { session: Session }) {
               <ActionPanel>
                 <Action.Push
                   title="Send Message"
-                  target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />}
+                  target={
+                    <SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />
+                  }
                   icon={Icon.Envelope}
                 />
                 {session.url && <Action.OpenInBrowser url={session.url} />}
