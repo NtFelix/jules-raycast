@@ -1,7 +1,7 @@
 import { Form, ActionPanel, Action, showToast, getPreferenceValues, Toast } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
-import { useState, useEffect } from "react";
-import { useSources, Preferences, Source } from "./api";
+import { useState } from "react";
+import { useSources, Preferences, Source, API_BASE_URL } from "./api";
 
 type FormValues = {
   source: string;
@@ -12,12 +12,11 @@ type FormValues = {
 export default function Command() {
   const preferences = getPreferenceValues<Preferences>();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedSource, setSelectedSource] = useState<string>("");
 
-  const { data: sourcesData, isLoading: isLoadingSources } = useSources();
+  const { data: sourcesData, isLoading: isLoadingSources, selectedSource, setSelectedSource } = useSources();
 
   const { data: sourceDetails, isLoading: isLoadingSourceDetails } = useFetch<Source>(
-    `https://jules.googleapis.com/v1alpha/${selectedSource}`,
+    `${API_BASE_URL}/${selectedSource}`,
     {
       headers: {
         "X-Goog-Api-Key": preferences.julesApiKey,
@@ -33,19 +32,12 @@ export default function Command() {
     },
   );
 
-  // Set initial selected source when sources are loaded
-  useEffect(() => {
-    if (sourcesData?.sources && sourcesData.sources.length > 0 && !selectedSource) {
-      setSelectedSource(sourcesData.sources[0].name);
-    }
-  }, [sourcesData]);
-
   async function handleSubmit(values: FormValues) {
     setIsLoading(true);
     const toast = await showToast({ style: Toast.Style.Animated, title: "Creating session..." });
 
     try {
-      const response = await fetch("https://jules.googleapis.com/v1alpha/sessions", {
+      const response = await fetch(`${API_BASE_URL}/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
