@@ -1,32 +1,7 @@
 import { Form, ActionPanel, Action, showToast, getPreferenceValues, Toast } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState, useEffect } from "react";
-
-interface Preferences {
-  julesApiKey: string;
-}
-
-type GitHubBranch = {
-  displayName: string;
-};
-
-type GitHubRepo = {
-  owner: string;
-  repo: string;
-  defaultBranch?: GitHubBranch;
-  branches?: GitHubBranch[];
-};
-
-type Source = {
-  name: string;
-  id: string;
-  githubRepo: GitHubRepo;
-};
-
-type SourcesResponse = {
-  sources: Source[];
-  nextPageToken?: string;
-};
+import { useSources, Preferences, Source } from "./api";
 
 type FormValues = {
   source: string;
@@ -39,21 +14,7 @@ export default function Command() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSource, setSelectedSource] = useState<string>("");
 
-  const { data: sourcesData, isLoading: isLoadingSources } = useFetch<SourcesResponse>(
-    "https://jules.googleapis.com/v1alpha/sources",
-    {
-      headers: {
-        "X-Goog-Api-Key": preferences.julesApiKey,
-      },
-      onError: (error) => {
-        showToast({
-          style: Toast.Style.Failure,
-          title: "Failed to fetch sources",
-          message: error.message,
-        });
-      },
-    },
-  );
+  const { data: sourcesData, isLoading: isLoadingSources } = useSources();
 
   const { data: sourceDetails, isLoading: isLoadingSourceDetails } = useFetch<Source>(
     `https://jules.googleapis.com/v1alpha/${selectedSource}`,

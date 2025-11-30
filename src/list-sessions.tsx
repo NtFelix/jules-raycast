@@ -11,24 +11,7 @@ import {
 } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState, useEffect } from "react";
-
-interface Preferences {
-  julesApiKey: string;
-}
-
-type Source = {
-  name: string;
-  id: string;
-  githubRepo: {
-    owner: string;
-    repo: string;
-  };
-};
-
-type SourcesResponse = {
-  sources: Source[];
-  nextPageToken?: string;
-};
+import { useSources, Preferences } from "./api";
 
 type Session = {
   name: string;
@@ -235,21 +218,7 @@ export default function Command() {
   const preferences = getPreferenceValues<Preferences>();
   const [selectedSource, setSelectedSource] = useState<string>("");
 
-  const { data: sourcesData, isLoading: isLoadingSources } = useFetch<SourcesResponse>(
-    "https://jules.googleapis.com/v1alpha/sources",
-    {
-      headers: {
-        "X-Goog-Api-Key": preferences.julesApiKey,
-      },
-      onError: (error) => {
-        showToast({
-          style: Toast.Style.Failure,
-          title: "Failed to fetch sources",
-          message: error.message,
-        });
-      },
-    },
-  );
+  const { data: sourcesData, isLoading: isLoadingSources } = useSources();
 
   const { data: sessionsData, isLoading: isLoadingSessions } = useFetch<SessionsResponse>(
     "https://jules.googleapis.com/v1alpha/sessions",
