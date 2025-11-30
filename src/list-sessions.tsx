@@ -165,6 +165,8 @@ function SessionActivities({ session }: { session: Session }) {
             target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />}
             icon={Icon.Envelope}
           />
+          {session.url && <Action.OpenInBrowser url={session.url} />}
+          <Action.CopyToClipboard title="Copy Session ID" content={session.id} />
           <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
         </ActionPanel>
       }
@@ -172,28 +174,54 @@ function SessionActivities({ session }: { session: Session }) {
       {sortedActivities.map((activity) => {
         let markdown = "";
         let title = "Unknown Activity";
+        let copyContent = "";
 
         if (activity.userMessaged) {
           title = "You";
           markdown = `**You:**\n\n${activity.userMessaged.userMessage}`;
+          copyContent = activity.userMessaged.userMessage;
         } else if (activity.agentMessaged) {
           title = "Jules";
           markdown = `**Jules:**\n\n${activity.agentMessaged.agentMessage}`;
+          copyContent = activity.agentMessaged.agentMessage;
         } else if (activity.planGenerated) {
           title = "Plan Generated";
           markdown = `**Plan Generated:**\n\n${activity.planGenerated.plan.steps.map((s, i) => `${i + 1}. ${s.title}`).join("\n")}`;
+          copyContent = activity.planGenerated.plan.steps.map((s, i) => `${i + 1}. ${s.title}`).join("\n");
         } else if (activity.progressUpdated) {
           title = "Progress Update";
           markdown = `**Progress Update:**\n\n**${activity.progressUpdated.title}**\n${activity.progressUpdated.description}`;
+          copyContent = `${activity.progressUpdated.title}\n${activity.progressUpdated.description}`;
         } else if (activity.sessionCompleted) {
           title = "Session Completed";
           markdown = "**Session Completed**";
+          copyContent = "Session Completed";
         } else if (activity.sessionFailed) {
           title = "Session Failed";
           markdown = `**Session Failed:**\n\n${activity.sessionFailed.reason}`;
+          copyContent = activity.sessionFailed.reason;
         }
 
-        return <List.Item key={activity.id} title={title} detail={<List.Item.Detail markdown={markdown} />} />;
+        return (
+          <List.Item
+            key={activity.id}
+            title={title}
+            detail={<List.Item.Detail markdown={markdown} />}
+            actions={
+              <ActionPanel>
+                <Action.Push
+                  title="Send Message"
+                  target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />}
+                  icon={Icon.Envelope}
+                />
+                {session.url && <Action.OpenInBrowser url={session.url} />}
+                {copyContent && <Action.CopyToClipboard title="Copy Activity Text" content={copyContent} />}
+                <Action.CopyToClipboard title="Copy Session ID" content={session.id} />
+                <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
+              </ActionPanel>
+            }
+          />
+        );
       })}
     </List>
   );
