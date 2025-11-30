@@ -199,19 +199,19 @@ function SessionActivities({ session }: { session: Session }) {
   );
 }
 
-function getStateColor(state: string): Color {
-  const stateColorMap: Record<string, Color> = {
-    succeeded: Color.Green,
-    completed: Color.Green,
-    failed: Color.Red,
-    error: Color.Red,
-    in_progress: Color.Blue,
-    running: Color.Blue,
-    active: Color.Blue,
-    awaiting_user_feedback: Color.Orange,
-    pending: Color.Yellow,
-  };
+const stateColorMap: Record<string, Color> = {
+  succeeded: Color.Green,
+  completed: Color.Green,
+  failed: Color.Red,
+  error: Color.Red,
+  in_progress: Color.Blue,
+  running: Color.Blue,
+  active: Color.Blue,
+  awaiting_user_feedback: Color.Orange,
+  pending: Color.Yellow,
+};
 
+function getStateColor(state: string): Color {
   return stateColorMap[state.toLowerCase()] ?? Color.SecondaryText;
 }
 
