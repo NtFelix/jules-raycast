@@ -227,7 +227,7 @@ function SessionActivities({ session }: { session: Session }) {
               <SessionActionPanel
                 session={session}
                 revalidate={revalidate}
-                lastActivity={sortedActivities[0]}
+                lastActivity={activity}
                 copyContent={copyContent}
               />
             }
