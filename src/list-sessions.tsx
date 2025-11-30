@@ -129,6 +129,32 @@ function SendMessageForm({
   );
 }
 
+function SessionActionPanel({
+  session,
+  revalidate,
+  lastActivity,
+  copyContent,
+}: {
+  session: Session;
+  revalidate: () => void;
+  lastActivity?: Activity;
+  copyContent?: string;
+}) {
+  return (
+    <ActionPanel>
+      <Action.Push
+        title="Send Message"
+        target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={lastActivity} />}
+        icon={Icon.Envelope}
+      />
+      {session.url && <Action.OpenInBrowser url={session.url} />}
+      {copyContent && <Action.CopyToClipboard title="Copy Activity Text" content={copyContent} />}
+      <Action.CopyToClipboard title="Copy Session ID" content={session.id} />
+      <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
+    </ActionPanel>
+  );
+}
+
 function SessionActivities({ session }: { session: Session }) {
   const preferences = getPreferenceValues<Preferences>();
   const { data, isLoading, revalidate } = useFetch<ActivitiesResponse>(
@@ -158,18 +184,7 @@ function SessionActivities({ session }: { session: Session }) {
       isLoading={isLoading}
       navigationTitle={`Chat: ${session.title || session.id}`}
       isShowingDetail
-      actions={
-        <ActionPanel>
-          <Action.Push
-            title="Send Message"
-            target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />}
-            icon={Icon.Envelope}
-          />
-          {session.url && <Action.OpenInBrowser url={session.url} />}
-          <Action.CopyToClipboard title="Copy Session ID" content={session.id} />
-          <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
-        </ActionPanel>
-      }
+      actions={<SessionActionPanel session={session} revalidate={revalidate} lastActivity={sortedActivities[0]} />}
     >
       {sortedActivities.map((activity) => {
         let markdown = "";
@@ -208,19 +223,12 @@ function SessionActivities({ session }: { session: Session }) {
             title={title}
             detail={<List.Item.Detail markdown={markdown} />}
             actions={
-              <ActionPanel>
-                <Action.Push
-                  title="Send Message"
-                  target={
-                    <SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />
-                  }
-                  icon={Icon.Envelope}
-                />
-                {session.url && <Action.OpenInBrowser url={session.url} />}
-                {copyContent && <Action.CopyToClipboard title="Copy Activity Text" content={copyContent} />}
-                <Action.CopyToClipboard title="Copy Session ID" content={session.id} />
-                <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
-              </ActionPanel>
+              <SessionActionPanel
+                session={session}
+                revalidate={revalidate}
+                lastActivity={sortedActivities[0]}
+                copyContent={copyContent}
+              />
             }
           />
         );
