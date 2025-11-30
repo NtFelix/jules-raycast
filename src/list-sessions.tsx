@@ -10,7 +10,7 @@ import {
   Icon,
 } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSources, Preferences, API_BASE_URL } from "./api";
 
 type Session = {
@@ -146,8 +146,10 @@ function SessionActivities({ session }: { session: Session }) {
     },
   );
 
-  const sortedActivities = [...(data?.activities || [])].sort(
-    (a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime(),
+  const sortedActivities = useMemo(
+    () =>
+      [...(data?.activities || [])].sort((a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime()),
+    [data?.activities],
   );
 
   return (
