@@ -200,24 +200,19 @@ function SessionActivities({ session }: { session: Session }) {
 }
 
 function getStateColor(state: string): Color {
-  switch (state.toLowerCase()) {
-    case "succeeded":
-    case "completed":
-      return Color.Green;
-    case "failed":
-    case "error":
-      return Color.Red;
-    case "in_progress":
-    case "running":
-    case "active":
-      return Color.Blue;
-    case "awaiting_user_feedback":
-      return Color.Orange;
-    case "pending":
-      return Color.Yellow;
-    default:
-      return Color.SecondaryText;
-  }
+  const stateColorMap: Record<string, Color> = {
+    succeeded: Color.Green,
+    completed: Color.Green,
+    failed: Color.Red,
+    error: Color.Red,
+    in_progress: Color.Blue,
+    running: Color.Blue,
+    active: Color.Blue,
+    awaiting_user_feedback: Color.Orange,
+    pending: Color.Yellow,
+  };
+
+  return stateColorMap[state.toLowerCase()] ?? Color.SecondaryText;
 }
 
 export default function Command() {
