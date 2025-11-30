@@ -8,6 +8,7 @@ import {
   useNavigation,
   Form,
   Icon,
+  Color,
 } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState, useEffect, useMemo } from "react";
@@ -198,6 +199,27 @@ function SessionActivities({ session }: { session: Session }) {
   );
 }
 
+function getStateColor(state: string): Color {
+  switch (state.toLowerCase()) {
+    case "succeeded":
+    case "completed":
+      return Color.Green;
+    case "failed":
+    case "error":
+      return Color.Red;
+    case "in_progress":
+    case "running":
+    case "active":
+      return Color.Blue;
+    case "awaiting_user_feedback":
+      return Color.Orange;
+    case "pending":
+      return Color.Yellow;
+    default:
+      return Color.SecondaryText;
+  }
+}
+
 export default function Command() {
   const preferences = getPreferenceValues<Preferences>();
   const [selectedSource, setSelectedSource] = useState<string>("");
@@ -245,8 +267,8 @@ export default function Command() {
         <List.Item
           key={session.id}
           title={session.title || session.prompt || "Untitled Session"}
-          subtitle={session.state}
-          accessories={[{ text: session.id }]}
+          subtitle={session.id}
+          accessories={[{ tag: { value: session.state, color: getStateColor(session.state) } }]}
           actions={
             <ActionPanel>
               <Action.Push title="View Activities" target={<SessionActivities session={session} />} />
