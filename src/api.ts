@@ -1,6 +1,8 @@
 import { getPreferenceValues, showToast, Toast } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 
+export const API_BASE_URL = "https://jules.googleapis.com/v1alpha";
+
 export interface Preferences {
   julesApiKey: string;
 }
@@ -30,7 +32,7 @@ export type SourcesResponse = {
 export function useSources() {
   const preferences = getPreferenceValues<Preferences>();
 
-  return useFetch<SourcesResponse>("https://jules.googleapis.com/v1alpha/sources", {
+  return useFetch<SourcesResponse>(`${API_BASE_URL}/sources`, {
     headers: {
       "X-Goog-Api-Key": preferences.julesApiKey,
     },

@@ -11,7 +11,7 @@ import {
 } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState, useEffect } from "react";
-import { useSources, Preferences } from "./api";
+import { useSources, Preferences, API_BASE_URL } from "./api";
 
 type Session = {
   name: string;
@@ -67,7 +67,7 @@ function SendMessageForm({
     const toast = await showToast({ style: Toast.Style.Animated, title: "Sending message..." });
 
     try {
-      const response = await fetch(`https://jules.googleapis.com/v1alpha/sessions/${session.id}:sendMessage`, {
+      const response = await fetch(`${API_BASE_URL} /sessions/${session.id}: sendMessage`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ function SendMessageForm({
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to send message: ${response.statusText} - ${errorText}`);
+        throw new Error(`Failed to send message: ${response.statusText} - ${errorText} `);
       }
 
       toast.style = Toast.Style.Success;
@@ -99,17 +99,17 @@ function SendMessageForm({
   let lastActivityText = "";
   if (lastActivity) {
     if (lastActivity.userMessaged) {
-      lastActivityText = `You: ${lastActivity.userMessaged.userMessage}`;
+      lastActivityText = `You: ${lastActivity.userMessaged.userMessage} `;
     } else if (lastActivity.agentMessaged) {
-      lastActivityText = `Jules: ${lastActivity.agentMessaged.agentMessage}`;
+      lastActivityText = `Jules: ${lastActivity.agentMessaged.agentMessage} `;
     } else if (lastActivity.planGenerated) {
       lastActivityText = "Plan Generated";
     } else if (lastActivity.progressUpdated) {
-      lastActivityText = `Progress Update: ${lastActivity.progressUpdated.title}`;
+      lastActivityText = `Progress Update: ${lastActivity.progressUpdated.title} `;
     } else if (lastActivity.sessionCompleted) {
       lastActivityText = "Session Completed";
     } else if (lastActivity.sessionFailed) {
-      lastActivityText = `Session Failed: ${lastActivity.sessionFailed.reason}`;
+      lastActivityText = `Session Failed: ${lastActivity.sessionFailed.reason} `;
     }
   }
 
@@ -131,7 +131,7 @@ function SendMessageForm({
 function SessionActivities({ session }: { session: Session }) {
   const preferences = getPreferenceValues<Preferences>();
   const { data, isLoading, revalidate } = useFetch<ActivitiesResponse>(
-    `https://jules.googleapis.com/v1alpha/sessions/${session.id}/activities`,
+    `${API_BASE_URL} /sessions/${session.id}/activities`,
     {
       headers: {
         "X-Goog-Api-Key": preferences.julesApiKey,
@@ -220,21 +220,18 @@ export default function Command() {
 
   const { data: sourcesData, isLoading: isLoadingSources } = useSources();
 
-  const { data: sessionsData, isLoading: isLoadingSessions } = useFetch<SessionsResponse>(
-    "https://jules.googleapis.com/v1alpha/sessions",
-    {
-      headers: {
-        "X-Goog-Api-Key": preferences.julesApiKey,
-      },
-      onError: (error) => {
-        showToast({
-          style: Toast.Style.Failure,
-          title: "Failed to fetch sessions",
-          message: error.message,
-        });
-      },
+  const { data: sessionsData, isLoading: isLoadingSessions } = useFetch<SessionsResponse>(`${API_BASE_URL}/sessions`, {
+    headers: {
+      "X-Goog-Api-Key": preferences.julesApiKey,
     },
-  );
+    onError: (error) => {
+      showToast({
+        style: Toast.Style.Failure,
+        title: "Failed to fetch sessions",
+        message: error.message,
+      });
+    },
+  });
 
   useEffect(() => {
     if (sourcesData?.sources && sourcesData.sources.length > 0 && !selectedSource) {
