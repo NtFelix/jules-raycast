@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "jules",
-  "title": "Jules",
-  "description": "It brings Google Jules coding agent to your fingertips with Raycast",
+  "title": "Google Jules",
+  "description": "Interact with Google Jules coding agent directly from Raycast.",
   "icon": "extension-icon.png",
   "author": "ntfelix",
   "platforms": [
@@ -17,10 +17,27 @@
   "commands": [
     {
       "name": "start-new-session",
-      "title": "Start New Session",
-      "subtitle": "start a new sessino with google jules",
-      "description": "it starts a new google jules session",
+      "title": "Start Session",
+      "subtitle": "Google Jules",
+      "description": "Start a new coding session with Google Jules",
       "mode": "view"
+    },
+    {
+      "name": "list-sessions",
+      "title": "Search Sessions",
+      "subtitle": "Google Jules",
+      "description": "Search and manage your Google Jules sessions",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "julesApiKey",
+      "type": "password",
+      "required": true,
+      "title": "Jules API Key",
+      "description": "API Key for Jules",
+      "placeholder": "Enter your Jules API Key"
     }
   ],
   "dependencies": {
