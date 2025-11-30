@@ -1,4 +1,4 @@
-import { Form, ActionPanel, Action, showToast, getPreferenceValues, Toast } from "@raycast/api";
+import { Form, ActionPanel, Action, showToast, getPreferenceValues, Toast, useNavigation } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useState } from "react";
 import { useSources, Preferences, Source, API_BASE_URL } from "./api";
@@ -12,6 +12,7 @@ type FormValues = {
 export default function Command() {
   const preferences = getPreferenceValues<Preferences>();
   const [isLoading, setIsLoading] = useState(false);
+  const { pop } = useNavigation();
 
   const { data: sourcesData, isLoading: isLoadingSources, selectedSource, setSelectedSource } = useSources();
 
@@ -65,6 +66,7 @@ export default function Command() {
       toast.style = Toast.Style.Success;
       toast.title = "Session created successfully";
       toast.message = `Session ${result.name} created`;
+      pop();
     } catch (error) {
       toast.style = Toast.Style.Failure;
       toast.title = "Failed to create session";
