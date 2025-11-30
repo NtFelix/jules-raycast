@@ -244,12 +244,13 @@ export default function Command() {
       {filteredSessions.map((session) => (
         <List.Item
           key={session.id}
+          icon={Icon.Message}
           title={session.title || session.prompt || "Untitled Session"}
           subtitle={session.state}
           accessories={[{ text: session.id }]}
           actions={
             <ActionPanel>
-              <Action.Push title="View Activities" target={<SessionActivities session={session} />} />
+              <Action.Push title="View Activities" icon={Icon.Eye} target={<SessionActivities session={session} />} />
               {session.url && <Action.OpenInBrowser url={session.url} />}
               <Action.CopyToClipboard content={session.id} title="Copy Session ID" />
             </ActionPanel>
