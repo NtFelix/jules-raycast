@@ -143,7 +143,7 @@ export default function Command() {
         ))}
       </Form.Dropdown>
 
-      <Form.Dropdown id="branch" title="Branch" defaultValue={defaultBranch}>
+      <Form.Dropdown id="branch" title="Branch" defaultValue={defaultBranch} key={selectedSource}>
         {branches.map((branch) => (
           <Form.Dropdown.Item key={branch.displayName} value={branch.displayName} title={branch.displayName} />
         ))}
