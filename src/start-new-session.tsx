@@ -111,7 +111,7 @@ export default function Command() {
 
       toast.style = Toast.Style.Success;
       toast.title = "Session created successfully";
-      toast.message = "Check logs for details";
+      toast.message = `Session ${result.name} created`;
     } catch (error) {
       toast.style = Toast.Style.Failure;
       toast.title = "Failed to create session";
