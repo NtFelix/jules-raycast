@@ -192,25 +192,7 @@ function SessionActivities({ session }: { session: Session }) {
           markdown = `**Session Failed:**\n\n${activity.sessionFailed.reason}`;
         }
 
-        return (
-          <List.Item
-            key={activity.id}
-            title={title}
-            detail={<List.Item.Detail markdown={markdown} />}
-            actions={
-              <ActionPanel>
-                <Action.Push
-                  title="Send Message"
-                  target={
-                    <SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />
-                  }
-                  icon={Icon.Envelope}
-                />
-                <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
-              </ActionPanel>
-            }
-          />
-        );
+        return <List.Item key={activity.id} title={title} detail={<List.Item.Detail markdown={markdown} />} />;
       })}
     </List>
   );
