@@ -152,6 +152,52 @@ function SessionActionPanel({ session, revalidate, lastActivity, copyContent }: 
   );
 }
 
+function getActivityDetails(activity: Activity) {
+  if (activity.userMessaged) {
+    return {
+      title: "You",
+      markdown: `**You:**\n\n${activity.userMessaged.userMessage}`,
+      copyContent: activity.userMessaged.userMessage,
+    };
+  } else if (activity.agentMessaged) {
+    return {
+      title: "Jules",
+      markdown: `**Jules:**\n\n${activity.agentMessaged.agentMessage}`,
+      copyContent: activity.agentMessaged.agentMessage,
+    };
+  } else if (activity.planGenerated) {
+    const planSteps = (activity.planGenerated.plan.steps || []).map((s, i) => `${i + 1}. ${s.title}`).join("\n");
+    return {
+      title: "Plan Generated",
+      markdown: `**Plan Generated:**\n\n${planSteps}`,
+      copyContent: planSteps,
+    };
+  } else if (activity.progressUpdated) {
+    return {
+      title: "Progress Update",
+      markdown: `**Progress Update:**\n\n**${activity.progressUpdated.title}**\n${activity.progressUpdated.description}`,
+      copyContent: `${activity.progressUpdated.title}\n${activity.progressUpdated.description}`,
+    };
+  } else if (activity.sessionCompleted) {
+    return {
+      title: "Session Completed",
+      markdown: "**Session Completed**",
+      copyContent: "Session Completed",
+    };
+  } else if (activity.sessionFailed) {
+    return {
+      title: "Session Failed",
+      markdown: `**Session Failed:**\n\n${activity.sessionFailed.reason}`,
+      copyContent: activity.sessionFailed.reason,
+    };
+  }
+  return {
+    title: "Unknown Activity",
+    markdown: "",
+    copyContent: "",
+  };
+}
+
 function SessionActivities({ session }: { session: Session }) {
   const preferences = getPreferenceValues<Preferences>();
   const { data, isLoading, revalidate } = useFetch<ActivitiesResponse>(
@@ -184,36 +230,7 @@ function SessionActivities({ session }: { session: Session }) {
       actions={<SessionActionPanel session={session} revalidate={revalidate} lastActivity={sortedActivities[0]} />}
     >
       {sortedActivities.map((activity) => {
-        let markdown = "";
-        let title = "Unknown Activity";
-        let copyContent = "";
-
-        if (activity.userMessaged) {
-          title = "You";
-          markdown = `**You:**\n\n${activity.userMessaged.userMessage}`;
-          copyContent = activity.userMessaged.userMessage;
-        } else if (activity.agentMessaged) {
-          title = "Jules";
-          markdown = `**Jules:**\n\n${activity.agentMessaged.agentMessage}`;
-          copyContent = activity.agentMessaged.agentMessage;
-        } else if (activity.planGenerated) {
-          title = "Plan Generated";
-          const planSteps = (activity.planGenerated.plan.steps || []).map((s, i) => `${i + 1}. ${s.title}`).join("\n");
-          markdown = `**Plan Generated:**\n\n${planSteps}`;
-          copyContent = planSteps;
-        } else if (activity.progressUpdated) {
-          title = "Progress Update";
-          markdown = `**Progress Update:**\n\n**${activity.progressUpdated.title}**\n${activity.progressUpdated.description}`;
-          copyContent = `${activity.progressUpdated.title}\n${activity.progressUpdated.description}`;
-        } else if (activity.sessionCompleted) {
-          title = "Session Completed";
-          markdown = "**Session Completed**";
-          copyContent = "Session Completed";
-        } else if (activity.sessionFailed) {
-          title = "Session Failed";
-          markdown = `**Session Failed:**\n\n${activity.sessionFailed.reason}`;
-          copyContent = activity.sessionFailed.reason;
-        }
+        const { title, markdown, copyContent } = getActivityDetails(activity);
 
         return (
           <List.Item
