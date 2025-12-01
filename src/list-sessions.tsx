@@ -129,6 +129,75 @@ function SendMessageForm({
   );
 }
 
+type SessionActionPanelProps = {
+  session: Session;
+  revalidate: () => void;
+  lastActivity?: Activity;
+  copyContent?: string;
+};
+
+function SessionActionPanel({ session, revalidate, lastActivity, copyContent }: SessionActionPanelProps) {
+  return (
+    <ActionPanel>
+      <Action.Push
+        title="Send Message"
+        target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={lastActivity} />}
+        icon={Icon.Envelope}
+      />
+      {session.url && <Action.OpenInBrowser url={session.url} />}
+      {copyContent && <Action.CopyToClipboard title="Copy Activity Text" content={copyContent} />}
+      <Action.CopyToClipboard title="Copy Session ID" content={session.id} />
+      <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
+    </ActionPanel>
+  );
+}
+
+function getActivityDetails(activity: Activity) {
+  if (activity.userMessaged) {
+    return {
+      title: "You",
+      markdown: `**You:**\n\n${activity.userMessaged.userMessage}`,
+      copyContent: activity.userMessaged.userMessage,
+    };
+  } else if (activity.agentMessaged) {
+    return {
+      title: "Jules",
+      markdown: `**Jules:**\n\n${activity.agentMessaged.agentMessage}`,
+      copyContent: activity.agentMessaged.agentMessage,
+    };
+  } else if (activity.planGenerated) {
+    const planSteps = (activity.planGenerated.plan.steps || []).map((s, i) => `${i + 1}. ${s.title}`).join("\n");
+    return {
+      title: "Plan Generated",
+      markdown: `**Plan Generated:**\n\n${planSteps}`,
+      copyContent: planSteps,
+    };
+  } else if (activity.progressUpdated) {
+    return {
+      title: "Progress Update",
+      markdown: `**Progress Update:**\n\n**${activity.progressUpdated.title}**\n${activity.progressUpdated.description}`,
+      copyContent: `${activity.progressUpdated.title}\n${activity.progressUpdated.description}`,
+    };
+  } else if (activity.sessionCompleted) {
+    return {
+      title: "Session Completed",
+      markdown: "**Session Completed**",
+      copyContent: "Session Completed",
+    };
+  } else if (activity.sessionFailed) {
+    return {
+      title: "Session Failed",
+      markdown: `**Session Failed:**\n\n${activity.sessionFailed.reason}`,
+      copyContent: activity.sessionFailed.reason,
+    };
+  }
+  return {
+    title: "Unknown Activity",
+    markdown: "",
+    copyContent: "",
+  };
+}
+
 function SessionActivities({ session }: { session: Session }) {
   const preferences = getPreferenceValues<Preferences>();
   const { data, isLoading, revalidate } = useFetch<ActivitiesResponse>(
@@ -158,42 +227,26 @@ function SessionActivities({ session }: { session: Session }) {
       isLoading={isLoading}
       navigationTitle={`Chat: ${session.title || session.id}`}
       isShowingDetail
-      actions={
-        <ActionPanel>
-          <Action.Push
-            title="Send Message"
-            target={<SendMessageForm session={session} onMessageSent={revalidate} lastActivity={sortedActivities[0]} />}
-            icon={Icon.Envelope}
-          />
-          <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
-        </ActionPanel>
-      }
+      actions={<SessionActionPanel session={session} revalidate={revalidate} lastActivity={sortedActivities[0]} />}
     >
       {sortedActivities.map((activity) => {
-        let markdown = "";
-        let title = "Unknown Activity";
+        const { title, markdown, copyContent } = getActivityDetails(activity);
 
-        if (activity.userMessaged) {
-          title = "You";
-          markdown = `**You:**\n\n${activity.userMessaged.userMessage}`;
-        } else if (activity.agentMessaged) {
-          title = "Jules";
-          markdown = `**Jules:**\n\n${activity.agentMessaged.agentMessage}`;
-        } else if (activity.planGenerated) {
-          title = "Plan Generated";
-          markdown = `**Plan Generated:**\n\n${activity.planGenerated.plan.steps.map((s, i) => `${i + 1}. ${s.title}`).join("\n")}`;
-        } else if (activity.progressUpdated) {
-          title = "Progress Update";
-          markdown = `**Progress Update:**\n\n**${activity.progressUpdated.title}**\n${activity.progressUpdated.description}`;
-        } else if (activity.sessionCompleted) {
-          title = "Session Completed";
-          markdown = "**Session Completed**";
-        } else if (activity.sessionFailed) {
-          title = "Session Failed";
-          markdown = `**Session Failed:**\n\n${activity.sessionFailed.reason}`;
-        }
-
-        return <List.Item key={activity.id} title={title} detail={<List.Item.Detail markdown={markdown} />} />;
+        return (
+          <List.Item
+            key={activity.id}
+            title={title}
+            detail={<List.Item.Detail markdown={markdown} />}
+            actions={
+              <SessionActionPanel
+                session={session}
+                revalidate={revalidate}
+                lastActivity={activity}
+                copyContent={copyContent}
+              />
+            }
+          />
+        );
       })}
     </List>
   );
