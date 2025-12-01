@@ -129,17 +129,14 @@ function SendMessageForm({
   );
 }
 
-function SessionActionPanel({
-  session,
-  revalidate,
-  lastActivity,
-  copyContent,
-}: {
+type SessionActionPanelProps = {
   session: Session;
   revalidate: () => void;
   lastActivity?: Activity;
   copyContent?: string;
-}) {
+};
+
+function SessionActionPanel({ session, revalidate, lastActivity, copyContent }: SessionActionPanelProps) {
   return (
     <ActionPanel>
       <Action.Push
