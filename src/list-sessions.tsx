@@ -201,7 +201,7 @@ function SessionActivities({ session }: { session: Session }) {
           copyContent = activity.agentMessaged.agentMessage;
         } else if (activity.planGenerated) {
           title = "Plan Generated";
-          const planSteps = activity.planGenerated.plan.steps.map((s, i) => `${i + 1}. ${s.title}`).join("\n");
+          const planSteps = (activity.planGenerated.plan.steps || []).map((s, i) => `${i + 1}. ${s.title}`).join("\n");
           markdown = `**Plan Generated:**\n\n${planSteps}`;
           copyContent = planSteps;
         } else if (activity.progressUpdated) {
