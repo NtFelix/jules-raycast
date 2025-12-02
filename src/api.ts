@@ -1,5 +1,5 @@
-import { getPreferenceValues, showToast, Toast } from "@raycast/api";
-import { useFetch } from "@raycast/utils";
+import { getPreferenceValues } from "@raycast/api";
+import { useFetch, showFailureToast } from "@raycast/utils";
 import { useState, useEffect } from "react";
 
 export const API_BASE_URL = "https://jules.googleapis.com/v1alpha";
@@ -39,11 +39,7 @@ export function useSources() {
       "X-Goog-Api-Key": preferences.julesApiKey,
     },
     onError: (error) => {
-      showToast({
-        style: Toast.Style.Failure,
-        title: "Failed to fetch sources",
-        message: error.message,
-      });
+      showFailureToast(error, { title: "Failed to fetch sources" });
     },
   });
 
