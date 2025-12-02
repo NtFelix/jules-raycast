@@ -32,7 +32,23 @@ Bring the power of the Google Jules coding agent directly to your fingertips wit
 
 Once installed, simply open Raycast and search for "Jules" to see the available commands.
 
+![Command List](metadata/screenshot1.png)
+
 - **Start New Session**: Launches the form to start a new Jules session.
+
+![Start Session](metadata/screenshot2.png)
+
+- **Search Sessions**: View and manage your active sessions.
+
+![List Sessions](metadata/screenshot3.png)
+
+- **Session Details**: View the plan and progress of a specific session.
+
+![Session Detail](metadata/screenshot4.png)
+
+- **Send Message**: Communicate with Jules directly.
+
+![Send Message](metadata/screenshot5.png)
 
 ## Development
 
