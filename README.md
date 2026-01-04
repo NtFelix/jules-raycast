@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme-cover.jpg" width="100%" alt="Jules for Raycast Cover">
+  <img src="assets/readme-cover.jpg" width="100%" alt="Google Jules Cover">
 </p>
 
 # Google Jules
