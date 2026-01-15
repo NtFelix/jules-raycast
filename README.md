@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="assets/extension-icon.png" width="128" alt="Google Jules Logo">
+</p>
+
+<p align="center">
   <img src="assets/readme-cover.jpg" width="100%" alt="Google Jules Cover">
 </p>
 
