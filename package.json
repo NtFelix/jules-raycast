@@ -20,14 +20,16 @@
       "title": "Start Session",
       "subtitle": "Google Jules",
       "description": "Start a new coding session with Google Jules",
-      "mode": "view"
+      "mode": "view",
+      "icon": "extension-icon.png"
     },
     {
       "name": "list-sessions",
       "title": "Search Sessions",
       "subtitle": "Google Jules",
       "description": "Search and manage your Google Jules sessions",
-      "mode": "view"
+      "mode": "view",
+      "icon": "extension-icon.png"
     }
   ],
   "preferences": [
