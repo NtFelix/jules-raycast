@@ -38,7 +38,7 @@
       "type": "password",
       "required": true,
       "title": "Jules API Key",
-      "description": "API Key for Jules",
+      "description": "To get your API key: 1. Login to jules.google.com 2. Go to Settings > API (https://jules.google.com/settings/api) 3. Create a new secret key and paste it here.",
       "placeholder": "Enter your Jules API Key"
     }
   ],

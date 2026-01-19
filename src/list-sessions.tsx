@@ -207,7 +207,10 @@ function SessionActivities({ session }: { session: Session }) {
         "X-Goog-Api-Key": preferences.julesApiKey,
       },
       onError: (error) => {
-        showFailureToast(error, { title: "Failed to fetch activities" });
+        showFailureToast(error, {
+          title: "Failed to fetch activities",
+          message: "Please check your Jules API key in Settings (https://jules.google.com/settings/api)",
+        });
       },
     },
   );
@@ -275,7 +278,10 @@ export default function Command() {
       "X-Goog-Api-Key": preferences.julesApiKey,
     },
     onError: (error) => {
-      showFailureToast(error, { title: "Failed to fetch sessions" });
+      showFailureToast(error, {
+        title: "Failed to fetch sessions",
+        message: "Please check your Jules API key in Settings (https://jules.google.com/settings/api)",
+      });
     },
   });
 

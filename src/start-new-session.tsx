@@ -24,7 +24,10 @@ export default function Command() {
       },
       execute: !!selectedSource,
       onError: (error) => {
-        showFailureToast(error, { title: "Failed to fetch source details" });
+        showFailureToast(error, {
+          title: "Failed to fetch source details",
+          message: "Please check your Jules API key in Settings (https://jules.google.com/settings/api)",
+        });
       },
     },
   );

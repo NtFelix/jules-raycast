@@ -39,7 +39,10 @@ export function useSources() {
       "X-Goog-Api-Key": preferences.julesApiKey,
     },
     onError: (error) => {
-      showFailureToast(error, { title: "Failed to fetch sources" });
+      showFailureToast(error, {
+        title: "Failed to fetch sources",
+        message: "Please check your Jules API key in Settings (https://jules.google.com/settings/api)",
+      });
     },
   });
 
