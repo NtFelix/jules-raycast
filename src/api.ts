@@ -30,7 +30,8 @@ export type SourcesResponse = {
   nextPageToken?: string;
 };
 
-export const API_KEY_ERROR_MESSAGE = "Please check your Jules API key in Settings (https://jules.google.com/settings/api)";
+export const API_KEY_ERROR_MESSAGE =
+  "Please check your Jules API key in Settings (https://jules.google.com/settings/api)";
 
 export function useSources() {
   const preferences = getPreferenceValues<Preferences>();
