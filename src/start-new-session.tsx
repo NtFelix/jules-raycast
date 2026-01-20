@@ -59,7 +59,7 @@ export default function Command() {
         throw new Error(`Failed to create session: ${response.statusText} - ${errorText}`);
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as { name: string };
       console.log("Session created:", result);
 
       toast.style = Toast.Style.Success;
