@@ -67,7 +67,6 @@ export default function Command() {
       }
 
       const result = jsonResponse as { name: string };
-
       console.log("Session created:", result);
 
       toast.style = Toast.Style.Success;
