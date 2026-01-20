@@ -28,6 +28,14 @@
       "description": "Search and manage your Google Jules sessions",
       "mode": "view",
       "icon": "extension-icon.png"
+    },
+    {
+      "name": "menu-bar-status",
+      "title": "Jules Status",
+      "description": "View Jules session status in the menu bar",
+      "mode": "menu-bar",
+      "icon": "extension-icon.png",
+      "interval": "1m"
     }
   ],
   "preferences": [
